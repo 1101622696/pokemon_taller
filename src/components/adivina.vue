@@ -4,11 +4,12 @@
     <div class="main-container">
       <div class="sub-container">
         <div class="action-section">
-          <button class="random-button" @click="rotar()">adivina el pokemon</button>
+          <button class="random-button" @click="rotar()">Adivina el Pokémon</button>
+          <!-- <button class="check-button" @click="comprobar()">Revisemos</button> -->
         </div>
         <div class="input-section">
           <label>
-            <input type="text" v-model="creatureName" :disabled="guessed" placeholder="Cuál es? escríbelo">
+            <input type="text" v-model="creatureName" :disabled="guessed" placeholder="Escribe el nombre del Pokémon">
           </label>
         </div>
         <div class="type-section">
@@ -19,19 +20,20 @@
             </li>
           </ul>
         </div>
-        <!-- <div class="counter" v-if="!guessed">{{ timeLeft }}</div> -->
         <div class="image-section">
           <section v-if="creatureData" class="creature-image">
             <h2 class="creature-name" v-if="creatureName === creatureData.name">{{ creatureData.name }}</h2>
             <p>Peso: {{ creatureData.weight }}</p>
             <div class="image-wrapper">
               <img :src="creatureData.sprites.other?.['official-artwork']?.front_default" :alt="creatureData.name"
-                   :class="{ 'creature-img': 1, 'colored-img': (creatureName === creatureData.name || timeLeft === 0), 'darkened-img': (creatureName !== creatureData.name && timeLeft > 0) }">
+                   :class="{ 'creature-img': 1, 'colored-img': (creatureName === creatureData.name), 'darkened-img': (creatureName !== creatureData.name && !guessed) }">
             </div>
           </section>
         </div>
       </div>
     </div>
+    <button class="check-button" @click="comprobar()">Revisemos</button>
+
   </div>
 </template>
 
@@ -42,36 +44,26 @@ import Swal from 'sweetalert2';
 
 let creatureData = ref(null);
 let creatureName = ref("");
-let gameState = ref("");
-let timeLeft = ref(0);
 let guessed = ref(false);
-let timer = null;
 
 async function rotar() {
   try {
-    if (timer) clearInterval(timer);
     const randomId = Math.floor(Math.random() * 1024) + 1;
     const result = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
     creatureData.value = result.data;
     creatureName.value = "";
-    timeLeft.value = 15;
     guessed.value = false;
-    gameState.value = "";
-
-    timer = setInterval(() => {
-      timeLeft.value--;
-      if (timeLeft.value === 0) {
-        mostrarError("Tiempo agotado");
-        clearInterval(timer);
-      } else if (creatureName.value === creatureData.value.name) {
-        guessed.value = true;
-        mostrarmensaje("¡Ganaste!");
-        clearInterval(timer);
-      }
-    }, 1000);
   } catch (error) {
     console.log(error);
-    gameState.value = "Se produjo un error al cargar la criatura.";
+  }
+}
+
+function comprobar() {
+  if (creatureName.value.toLowerCase() === creatureData.value.name.toLowerCase()) {
+    mostrarmensaje("¡Ganaste!");
+    guessed.value = true;
+  } else {
+    mostrarError("El nombre ingresado no es correcto");
   }
 }
 
@@ -82,10 +74,10 @@ function mostrarError(mensaje) {
     text: "Vuelve e intenta!",
     imageUrl: "https://i.gifer.com/APo8.gif",
     color: "white",
-    background: "rgb(21, 102, 139",
+    background: "rgb(21, 102, 139)",
     imageWidth: 300,
     imageHeight: 200,
-    backdrop: ` black `
+    backdrop: "black"
   });
 }
 
@@ -93,18 +85,21 @@ function mostrarmensaje(mensaje) {
   Swal.fire({
     width: 500,
     title: mensaje,
-    text: "Bien hecho",
+    text: "¡Bien hecho!",
     imageUrl: "https://i.pinimg.com/originals/13/a1/5b/13a15b6384a77f463056c03b97dfe6ad.gif",
     color: "black",
-    background: "rgb(21, 102, 139",
+    background: "rgb(21, 102, 139)",
     imageWidth: 300,
     imageHeight: 200,
-    backdrop: ` #fff `,
+    backdrop: "#fff",
     showConfirmButton: false,
     timer: 1800
   });
 }
 </script>
+
+
+
 
 <style scoped>
 .notification-container {
@@ -118,6 +113,21 @@ function mostrarmensaje(mensaje) {
   justify-content: center;
 }
 
+.check-button{
+  font-size: 1.2rem;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 6px;
+  background-color: #401875;
+  color: black;
+  cursor: pointer;
+  margin-bottom: 10px;
+  margin-left:auto;
+  margin-right: auto;
+  /* position: absolute;
+  transform: translate(-50%, -50%); */
+
+}
 .notification {
   background-color: rgba(0, 0, 0, 0.7);
   padding: 20px 30px;
@@ -186,7 +196,6 @@ input {
   background-color: rgb(165, 151, 230);
 
 }
-
 
 .random-button {
   font-size: 1.2rem;
