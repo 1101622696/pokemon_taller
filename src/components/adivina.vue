@@ -19,7 +19,6 @@
             </li>
           </ul>
         </div>
-        <div class="counter" v-if="!guessed">{{ timeLeft }}</div>
         <div class="image-section">
           <section v-if="creatureData" class="creature-image">
             <h2 class="creature-name" v-if="creatureName === creatureData.name">{{ creatureData.name }}</h2>
