@@ -19,6 +19,7 @@
             </li>
           </ul>
         </div>
+        <!-- <div class="counter" v-if="!guessed">{{ timeLeft }}</div> -->
         <div class="image-section">
           <section v-if="creatureData" class="creature-image">
             <h2 class="creature-name" v-if="creatureName === creatureData.name">{{ creatureData.name }}</h2>
@@ -53,7 +54,7 @@ async function rotar() {
     const result = await axios.get(`https://pokeapi.co/api/v2/pokemon/${randomId}`);
     creatureData.value = result.data;
     creatureName.value = "";
-    timeLeft.value = 30;
+    timeLeft.value = 15;
     guessed.value = false;
     gameState.value = "";
 
