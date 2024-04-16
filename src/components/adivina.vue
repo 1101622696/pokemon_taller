@@ -179,12 +179,14 @@ h5 {
 }
 
 input {
-  width: 60%;
+  width: 30%;
   font-size: 1.2rem;
   padding: 10px;
-  border-radius: 6px;
-  border: 1px solid #ccc;
+  border: none;
+  background-color: rgb(165, 151, 230);
+
 }
+
 
 .random-button {
   font-size: 1.2rem;
